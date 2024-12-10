@@ -2,8 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { useRouter } from 'next/router';
 import dynamic from 'next/dynamic';
 import { Card } from '@goorm-dev/vapor-core';
-import { 
-  Button, 
+import {
+  Button,
   Status,
   Spinner,
   Text,
@@ -52,21 +52,21 @@ const SCROLL_DEBOUNCE_DELAY = 150;
 const INITIAL_PAGE_SIZE = 10;
 
 const LoadingIndicator = ({ text }) => (
-  <div className="loading-indicator">
-    <Spinner size="sm" className="mr-3" />
-    <Text size="sm" color="secondary">{text}</Text>
-  </div>
+    <div className="loading-indicator">
+      <Spinner size="sm" className="mr-3" />
+      <Text size="sm" color="secondary">{text}</Text>
+    </div>
 );
 
 const TableWrapper = ({ children, onScroll, loadingMore, hasMore, rooms }) => {
   const tableRef = useRef(null);
   const scrollTimeoutRef = useRef(null);
   const lastScrollTime = useRef(Date.now());
-  
+
   const handleScroll = useCallback((e) => {
     const now = Date.now();
     const container = e.target;
-    
+
     // 마지막 스크롤 체크로부터 150ms가 지났는지 확인
     if (now - lastScrollTime.current >= SCROLL_DEBOUNCE_DELAY) {
       const { scrollHeight, scrollTop, clientHeight } = container;
@@ -132,36 +132,36 @@ const TableWrapper = ({ children, onScroll, loadingMore, hasMore, rooms }) => {
       }
     };
   }, [handleScroll]);
-  
+
   return (
-    <div 
-      ref={tableRef} 
-      className="chat-rooms-table"
-      style={{
-        height: '430px', 
-        overflowY: 'auto',
-        position: 'relative',
-        borderRadius: '0.5rem',
-        backgroundColor: 'var(--background-normal)',
-        border: '1px solid var(--border-color)',
-        scrollBehavior: 'smooth',
-        WebkitOverflowScrolling: 'touch'
-      }}
-    >
-      {children}
-      {loadingMore && (
-        <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-700">
-          <LoadingIndicator text="추가 채팅방을 불러오는 중..." />
-        </div>
-      )}
-      {!hasMore && rooms?.length > 0 && (
-        <div className="p-4 text-center border-t border-gray-700">
-          <Text size="sm" color="secondary">
-            모든 채팅방을 불러왔습니다.
-          </Text>
-        </div>
-      )}
-    </div>
+      <div
+          ref={tableRef}
+          className="chat-rooms-table"
+          style={{
+            height: '430px',
+            overflowY: 'auto',
+            position: 'relative',
+            borderRadius: '0.5rem',
+            backgroundColor: 'var(--background-normal)',
+            border: '1px solid var(--border-color)',
+            scrollBehavior: 'smooth',
+            WebkitOverflowScrolling: 'touch'
+          }}
+      >
+        {children}
+        {loadingMore && (
+            <div className="flex items-center justify-center gap-2 p-4 border-t border-gray-700">
+              <LoadingIndicator text="추가 채팅방을 불러오는 중..." />
+            </div>
+        )}
+        {!hasMore && rooms?.length > 0 && (
+            <div className="p-4 text-center border-t border-gray-700">
+              <Text size="sm" color="secondary">
+                모든 채팅방을 불러왔습니다.
+              </Text>
+            </div>
+        )}
+      </div>
   );
 };
 
@@ -192,9 +192,9 @@ function ChatRoomsComponent() {
   const lastLoadedPageRef = useRef(0);
 
   const getRetryDelay = useCallback((retryCount) => {
-    const delay = RETRY_CONFIG.baseDelay * 
-      Math.pow(RETRY_CONFIG.backoffFactor, retryCount) *
-      (1 + Math.random() * 0.1);
+    const delay = RETRY_CONFIG.baseDelay *
+        Math.pow(RETRY_CONFIG.backoffFactor, retryCount) *
+        (1 + Math.random() * 0.1);
     return Math.min(delay, RETRY_CONFIG.maxDelay);
   }, []);
 
@@ -283,9 +283,9 @@ function ChatRoomsComponent() {
 
   const fetchRooms = useCallback(async (isLoadingMore = false) => {
     if (!currentUser?.token || isLoadingRef.current) {
-      console.log('Fetch prevented:', { 
-        hasToken: !!currentUser?.token, 
-        isLoading: isLoadingRef.current 
+      console.log('Fetch prevented:', {
+        hasToken: !!currentUser?.token,
+        isLoading: isLoadingRef.current
       });
       return;
     }
@@ -311,15 +311,15 @@ function ChatRoomsComponent() {
           sortOrder: sorting[0]?.desc ? 'desc' : 'asc'
         }
       });
-      
+
       if (!response?.data?.data) {
         throw new Error('INVALID_RESPONSE');
       }
 
       const { data, metadata } = response.data;
-      console.log('Fetched rooms:', { 
-        count: data.length, 
-        hasMore: metadata.hasMore 
+      console.log('Fetched rooms:', {
+        count: data.length,
+        hasMore: metadata.hasMore
       });
 
       setRooms(prev => {
@@ -375,7 +375,7 @@ function ChatRoomsComponent() {
       const nextPage = Math.floor(rooms.length / pageSize);
       console.log('Loading page:', nextPage);
       setPageIndex(nextPage);
-      
+
       const response = await axiosInstance.get('/api/rooms', {
         params: {
           page: nextPage,
@@ -387,11 +387,11 @@ function ChatRoomsComponent() {
 
       if (response.data?.success) {
         const { data: newRooms, metadata } = response.data;
-        console.log('Loaded new rooms:', { 
-          count: newRooms.length, 
-          hasMore: metadata.hasMore 
+        console.log('Loaded new rooms:', {
+          count: newRooms.length,
+          hasMore: metadata.hasMore
         });
-        
+
         setRooms(prev => {
           const existingIds = new Set(prev.map(room => room._id));
           const uniqueNewRooms = newRooms.filter(room => !existingIds.has(room._id));
@@ -524,8 +524,8 @@ function ChatRoomsComponent() {
           },
           roomUpdated: (updatedRoom) => {
             setRooms(prev => {
-              const updatedRooms = prev.map(room => 
-                room._id === updatedRoom._id ? updatedRoom : room
+              const updatedRooms = prev.map(room =>
+                  room._id === updatedRoom._id ? updatedRoom : room
               );
               previousRoomsRef.current = updatedRooms;
               return updatedRooms;
@@ -540,12 +540,12 @@ function ChatRoomsComponent() {
       } catch (error) {
         console.error('Socket connection error:', error);
         if (!isSubscribed) return;
-        
-        if (error.message?.includes('Authentication required') || 
+
+        if (error.message?.includes('Authentication required') ||
             error.message?.includes('Invalid session')) {
           handleAuthError({ response: { status: 401 } });
         }
-        
+
         setConnectionStatus(CONNECTION_STATUS.ERROR);
       }
     };
@@ -561,7 +561,7 @@ function ChatRoomsComponent() {
     };
   }, [currentUser, handleAuthError]);
 
-  const handleJoinRoom = async (roomId) => {
+  const handleJoinRoom = async (roomId, hasPassword) => {
     if (connectionStatus !== CONNECTION_STATUS.CONNECTED) {
       setError({
         title: '채팅방 입장 실패',
@@ -572,23 +572,28 @@ function ChatRoomsComponent() {
     }
 
     try {
-      const response = await axiosInstance.post(`/api/rooms/${roomId}/join`, {}, {
+      let password;
+      if(hasPassword) {
+        password = prompt('비밀번호 입력');
+        if(!password) return;
+      }
+      const response = await axiosInstance.post(`/api/rooms/${roomId}/join`, {password}, {
         timeout: 5000
       });
-      
+
       if (response.data.success) {
         router.push(`/chat?room=${roomId}`);
       }
     } catch (error) {
       console.error('Room join error:', error);
-      
+
       let errorMessage = '입장에 실패했습니다.';
       if (error.response?.status === 404) {
         errorMessage = '채팅방을 찾을 수 없습니다.';
       } else if (error.response?.status === 403) {
         errorMessage = '채팅방 입장 권한이 없습니다.';
       }
-      
+
       setError({
         title: '채팅방 입장 실패',
         message: error.response?.data?.message || errorMessage,
@@ -602,10 +607,10 @@ function ChatRoomsComponent() {
       accessorKey: 'name',
       header: '채팅방',
       cell: cellHelper(({ value, rowData }) => (
-        <div className="d-flex align-items-center gap-2">
-          <Text className="font-medium">{value}</Text>
-          {rowData.hasPassword && <Lock size={14} className="text-gray-500" />}
-        </div>
+          <div className="d-flex align-items-center gap-2">
+            <Text className="font-medium">{value}</Text>
+            {rowData.hasPassword && <Lock size={14} className="text-gray-500" />}
+          </div>
       )),
       size: 200,
       enableSorting: true
@@ -614,9 +619,9 @@ function ChatRoomsComponent() {
       accessorKey: 'participants',
       header: '참여자',
       cell: cellHelper(({ value }) => (
-        <Text className="participants-count">
-          {value?.length || 0}명
-        </Text>
+          <Text className="participants-count">
+            {value?.length || 0}명
+          </Text>
       )),
       size: 100,
       enableSorting: true
@@ -625,15 +630,15 @@ function ChatRoomsComponent() {
       accessorKey: 'createdAt',
       header: '생성일',
       cell: cellHelper(({ value }) => (
-        <Text className="created-at">
-          {new Date(value).toLocaleString('ko-KR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
-        </Text>
+          <Text className="created-at">
+            {new Date(value).toLocaleString('ko-KR', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </Text>
       )),
       size: 200,
       enableSorting: true,
@@ -643,14 +648,14 @@ function ChatRoomsComponent() {
       accessorKey: 'actions',
       header: '',
       cell: cellHelper(({ rowData }) => (
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => handleJoinRoom(rowData._id)}
-          disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
-        >
-          입장
-        </Button>
+          <Button
+              variant="primary"
+              size="md"
+              onClick={() => handleJoinRoom(rowData._id, rowData.hasPassword)}
+              disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
+          >
+            입장
+          </Button>
       )),
       size: 100,
       enableSorting: false
@@ -668,106 +673,106 @@ function ChatRoomsComponent() {
   });
 
   return (
-    <div className="chat-container">
-      <Card className="chat-rooms-card">
-        <Card.Header>
-          <div className="flex justify-between items-center">
-            <Card.Title>채팅방 목록</Card.Title>
-            <div className="flex items-center gap-2">
-              <Status 
-                label={STATUS_CONFIG[connectionStatus].label} 
-                color={STATUS_CONFIG[connectionStatus].color}
-              />
-              {(error || connectionStatus === CONNECTION_STATUS.ERROR) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    lastLoadedPageRef.current = 0;
-                    setPageIndex(0);
-                    fetchRooms(false);
-                  }}
-                  disabled={isRetrying}
-                  className="ml-2"
-                >
-                  <RefreshCcw className="w-4 h-4" />
-                  재연결
-                </Button>
-              )}
-            </div>
-          </div>
-        </Card.Header>
-        
-        <Card.Body className="p-6">
-          {error && (
-            <Alert color={error.type} className="mb-4">
-              <div className="flex items-start gap-2">
-                {connectionStatus === CONNECTION_STATUS.ERROR ? (
-                  <WifiOff className="w-4 h-4 mt-1" />
-                ) : (
-                  <AlertCircle className="w-4 h-4 mt-1" />
-                )}
-                <div>
-                  <div className="font-medium">{error.title}</div>
-                  <div className="mt-1">{error.message}</div>
-                  {error.showRetry && !isRetrying && (
+      <div className="chat-container">
+        <Card className="chat-rooms-card">
+          <Card.Header>
+            <div className="flex justify-between items-center">
+              <Card.Title>채팅방 목록</Card.Title>
+              <div className="flex items-center gap-2">
+                <Status
+                    label={STATUS_CONFIG[connectionStatus].label}
+                    color={STATUS_CONFIG[connectionStatus].color}
+                />
+                {(error || connectionStatus === CONNECTION_STATUS.ERROR) && (
                     <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        lastLoadedPageRef.current = 0;
-                        setPageIndex(0);
-                        fetchRooms(false);
-                      }}
-                      className="mt-2"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          lastLoadedPageRef.current = 0;
+                          setPageIndex(0);
+                          fetchRooms(false);
+                        }}
+                        disabled={isRetrying}
+                        className="ml-2"
                     >
-                      다시 시도
+                      <RefreshCcw className="w-4 h-4" />
+                      재연결
                     </Button>
-                  )}
-                </div>
+                )}
               </div>
-            </Alert>
-          )}
-          
-          {loading ? (
-            <LoadingIndicator text="채팅방 목록을 불러오는 중..." />
-          ) : rooms.length > 0 ? (
-            <TableWrapper
-              onScroll={handleLoadMore}
-              loadingMore={loadingMore}
-              hasMore={hasMore}
-              rooms={rooms}
-            >
-              <HScrollTable {...tableInstance.getTableProps()} />
-            </TableWrapper>
-          ) : !error && (
-            <div className="chat-rooms-empty">
-              <Text className="mb-4">생성된 채팅방이 없습니다.</Text>
-              <Button
-                variant="primary"
-                onClick={() => router.push('/chat-rooms/new')}
-                disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
-              >
-                새 채팅방 만들기
-              </Button>
             </div>
-          )}
-        </Card.Body>
-      </Card>
-    </div>
+          </Card.Header>
+
+          <Card.Body className="p-6">
+            {error && (
+                <Alert color={error.type} className="mb-4">
+                  <div className="flex items-start gap-2">
+                    {connectionStatus === CONNECTION_STATUS.ERROR ? (
+                        <WifiOff className="w-4 h-4 mt-1" />
+                    ) : (
+                        <AlertCircle className="w-4 h-4 mt-1" />
+                    )}
+                    <div>
+                      <div className="font-medium">{error.title}</div>
+                      <div className="mt-1">{error.message}</div>
+                      {error.showRetry && !isRetrying && (
+                          <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                lastLoadedPageRef.current = 0;
+                                setPageIndex(0);
+                                fetchRooms(false);
+                              }}
+                              className="mt-2"
+                          >
+                            다시 시도
+                          </Button>
+                      )}
+                    </div>
+                  </div>
+                </Alert>
+            )}
+
+            {loading ? (
+                <LoadingIndicator text="채팅방 목록을 불러오는 중..." />
+            ) : rooms.length > 0 ? (
+                <TableWrapper
+                    onScroll={handleLoadMore}
+                    loadingMore={loadingMore}
+                    hasMore={hasMore}
+                    rooms={rooms}
+                >
+                  <HScrollTable {...tableInstance.getTableProps()} />
+                </TableWrapper>
+            ) : !error && (
+                <div className="chat-rooms-empty">
+                  <Text className="mb-4">생성된 채팅방이 없습니다.</Text>
+                  <Button
+                      variant="primary"
+                      onClick={() => router.push('/chat-rooms/new')}
+                      disabled={connectionStatus !== CONNECTION_STATUS.CONNECTED}
+                  >
+                    새 채팅방 만들기
+                  </Button>
+                </div>
+            )}
+          </Card.Body>
+        </Card>
+      </div>
   );
 }
 
 const ChatRooms = dynamic(() => Promise.resolve(ChatRoomsComponent), {
   ssr: false,
   loading: () => (
-    <div className="auth-container">
-      <Card className="chat-rooms-card">
-        <Card.Body className="p-6">
-          <LoadingIndicator text="로딩 중..." />
-        </Card.Body>
-      </Card>
-    </div>
+      <div className="auth-container">
+        <Card className="chat-rooms-card">
+          <Card.Body className="p-6">
+            <LoadingIndicator text="로딩 중..." />
+          </Card.Body>
+        </Card>
+      </div>
   )
 });
 
