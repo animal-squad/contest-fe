@@ -4,6 +4,7 @@
 
 # node_modules
 node_modules
+.npmrc
 
 # env
 .env
@@ -15,3 +16,6 @@ dist
 # log files
 *.log
 logs
+
+# script files
+*.sh
