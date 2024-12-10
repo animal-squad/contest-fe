@@ -24,7 +24,7 @@ jobs:
       # 3. .env.local 파일 생성
       - name: Create .env.local
         run: |
-          echo "NEXT_PUBLIC_API_URL=http://localhost:5000" > .env.local
+          echo "NEXT_PUBLIC_API_URL=${{ vars.CONTEST_PUBLIC_API_URL }}" > .env.local
           echo "NEXT_PUBLIC_ENCRYPTION_KEY=${{ secrets.CONTEST_ENCRYPTION_KEY }}" >> .env.local
           echo "NEXT_PUBLIC_PASSWORD_SALT=${{ secrets.CONTEST_PASSWORD_SALT }}" >> .env.local
 
