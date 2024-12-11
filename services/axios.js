@@ -91,8 +91,21 @@ axiosInstance.interceptors.request.use(
   async (config) => {
     try {
       // 요청 데이터 검증
-      if (config.method !== "get" && !config.data) {
+      if (
+        (config.method !== "get" && !config.data) ||
+        typeof config.data !== "object"
+      ) {
         config.data = {};
+      }
+
+      // 설정된 데이터가 문자열이면 파싱 시도
+      if (typeof config.data === "string") {
+        try {
+          config.data = JSON.parse(config.data);
+        } catch (error) {
+          console.error("Request data parsing error:", error);
+          config.data = {};
+        }
       }
 
       // 인증 토큰 설정
