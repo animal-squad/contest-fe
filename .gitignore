@@ -19,3 +19,6 @@ logs
 
 # script files
 *.sh
+
+# next
+.next/
