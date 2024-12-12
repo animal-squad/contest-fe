@@ -1,9 +1,9 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { Card } from '@goorm-dev/vapor-core';
-import { 
-  Button, 
-  Input, 
+import {
+  Button,
+  Input,
   Text,
   Alert,
   FormGroup,
@@ -83,23 +83,23 @@ const Register = () => {
 
   const validateForm = () => {
     const newErrors = [];
-    
+
     if (!formData.name.trim()) {
       newErrors.push({ field: 'name', message: '이름을 입력해주세요.' });
     }
-    
+
     if (!formData.email.trim()) {
       newErrors.push({ field: 'email', message: '이메일을 입력해주세요.' });
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.push({ field: 'email', message: '올바른 이메일 형식이 아닙니다.' });
     }
-    
+
     if (!formData.password) {
       newErrors.push({ field: 'password', message: '비밀번호를 입력해주세요.' });
     } else if (formData.password.length < 6) {
       newErrors.push({ field: 'password', message: '비밀번호는 6자 이상이어야 합니다.' });
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       newErrors.push({ field: 'confirmPassword', message: '비밀번호가 일치하지 않습니다.' });
     }
@@ -110,7 +110,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -122,14 +122,14 @@ const Register = () => {
       const { name, email, password } = formData;
       // 회원가입
       await authService.register({ name, email, password });
-      
+
       // 바로 로그인 처리
       await authService.login({ email, password });
-      
+
       // 회원가입 성공 처리
       setShowSuccessModal(true);
       fireConfetti();
-      
+
       // 10초 후 채팅방 목록 페이지로 이동
       setTimeout(() => {
         router.push('/chat-rooms');
@@ -137,7 +137,7 @@ const Register = () => {
 
     } catch (err) {
       console.error('Registration error:', err);
-      
+
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
       } else if (err.response?.data?.message) {
@@ -157,11 +157,11 @@ const Register = () => {
   return (
     <div className="auth-container">
       <ReactCanvasConfetti refConfetti={getInstance} style={canvasStyles} />
-      
+
       <Card className="auth-card">
         <Card.Body className="auth-card-body">
           <div className="auth-header">
-            <img src="images/logo.png" className="w-50" alt="Logo" />
+            <img src="https://cdn.goorm-ktb-013.goorm.team/images/logo.png" className="w-50" alt="Logo" />
             <Text as="h3" typography="heading3">
               회원가입
             </Text>
@@ -299,7 +299,7 @@ const Register = () => {
             </Text>
           </div>
         </ModalHeader>
-        
+
         <ModalBody className="text-center py-6">
           <div className="flex flex-col items-center gap-4">
             <Text as="h4" typography="heading4" className="text-success">
@@ -313,9 +313,9 @@ const Register = () => {
         </ModalBody>
 
         <ModalFooter>
-          <Button 
-            variant="primary" 
-            size="lg" 
+          <Button
+            variant="primary"
+            size="lg"
             onClick={() => router.push('/chat-rooms')}
             className="w-full"
           >

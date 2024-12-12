@@ -50,11 +50,11 @@ const MessageContent = ({ content, isAI = false }) => {
 
       const mentionedName = match[1];
       const isAIMention = mentionedName === 'wayneAI' || mentionedName === 'consultingAI';
-      const displayName = isAIMention 
+      const displayName = isAIMention
         ? (mentionedName === 'wayneAI' ? 'Wayne AI' : 'Consulting AI')
         : mentionedName;
 
-      const mentionClass = isAIMention 
+      const mentionClass = isAIMention
         ? `mention mention-bot ${mentionedName === 'wayneAI' ? 'mention-wayne' : 'mention-consulting'}`
         : 'mention mention-user';
 
@@ -85,8 +85,8 @@ const MessageContent = ({ content, isAI = false }) => {
   const components = useMemo(() => ({
     p: ({ children }) => {
       if (
-        children.length === 1 && 
-        typeof children[0] === 'string' && 
+        children.length === 1 &&
+        typeof children[0] === 'string' &&
         !children[0].includes('\n')
       ) {
         return <p>{renderContentWithMentions(children[0])}</p>;
@@ -157,15 +157,15 @@ const MessageContent = ({ content, isAI = false }) => {
     ),
     li: ({ node, children, ...props }) => {
       // 체크박스가 포함된 리스트 아이템인지 확인
-      const hasCheckbox = node.children.some(child => 
-        child.type === 'element' && 
-        child.tagName === 'input' && 
+      const hasCheckbox = node.children.some(child =>
+        child.type === 'element' &&
+        child.tagName === 'input' &&
         child.properties.type === 'checkbox'
       );
 
       return (
-        <li 
-          className={`md-list-item ${hasCheckbox ? 'list-none' : ''}`} 
+        <li
+          className={`md-list-item ${hasCheckbox ? 'list-none' : ''}`}
           {...props}
         >
           {children}
@@ -190,7 +190,7 @@ const MessageContent = ({ content, isAI = false }) => {
         className="md-image"
         loading="lazy"
         onError={(e) => {
-          e.target.src = '/placeholder-image.png';
+          e.target.src = 'https://cdn.goorm-ktb-013.goorm.team/placeholder-image.png';
         }}
         {...props}
       />
@@ -221,13 +221,13 @@ const MessageContent = ({ content, isAI = false }) => {
 
   // 순수 텍스트 내용 여부 확인
   const isPlainText = useMemo(() => {
-    return typeof content === 'string' && 
-           !content.includes('```') && 
-           !content.includes('`') && 
-           !content.includes('#') && 
-           !content.includes('*') && 
-           !content.includes('_') && 
-           !content.includes('[') && 
+    return typeof content === 'string' &&
+           !content.includes('```') &&
+           !content.includes('`') &&
+           !content.includes('#') &&
+           !content.includes('*') &&
+           !content.includes('_') &&
+           !content.includes('[') &&
            !content.includes('|');
   }, [content]);
 

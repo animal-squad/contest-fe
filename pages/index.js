@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { Card } from '@goorm-dev/vapor-core';
-import { 
-  Button, 
-  Input, 
+import {
+  Button,
+  Input,
   Text,
   Alert,
   Label
@@ -13,9 +13,9 @@ import authService from '../services/authService';
 import { withoutAuth } from '../middleware/withAuth';
 
 const Login = () => {
-  const [formData, setFormData] = useState({ 
-    email: '', 
-    password: '' 
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -178,7 +178,7 @@ const Login = () => {
       <Card className="auth-card">
         <Card.Body className="auth-card-body">
           <div className="auth-header">
-            <img src="images/logo-h.png" className="w-50" />
+            <img src="https://cdn.goorm-ktb-013.goorm.team/images/logo-h.png" className="w-50" />
           </div>
 
           {error && (

@@ -199,7 +199,7 @@ const FileMessage = ({
                 originalname,
               });
               e.target.onerror = null;
-              e.target.src = "/images/placeholder-image.png";
+              e.target.src = "https://cdn.goorm-ktb-013.goorm.team/images/placeholder-image.png";
               setError("이미지를 불러올 수 없습니다.");
             }}
             loading="lazy"
