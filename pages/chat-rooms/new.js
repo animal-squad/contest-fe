@@ -76,7 +76,7 @@ function NewChatRoom() {
       setError("");
 
       // 채팅방 생성
-      const response = await axiosInstance.post("/api/roos", {
+      const response = await axiosInstance.post("/roos", {
         name: formData.name.trim(),
         password: formData.hasPassword ? formData.password : undefined,
       });
