@@ -17,6 +17,7 @@ const ReadStatus = ({
   messageId = null,
   messageRef = null, // 메시지 요소의 ref
   currentUserId = null, // 현재 사용자 ID
+  senderId = "",
   isMine = false,
 }) => {
   const [currentReaders, setCurrentReaders] = useState(readers || []);
@@ -31,21 +32,44 @@ const ReadStatus = ({
   const unreadParticipants = useMemo(() => {
     if (messageType === "system") return [];
 
-    return participants.filter((participant) => {
-      // isMine이 true이고, 해당 participant가 현재 사용자라면 무조건 읽은 것으로 처리
-      if (
-        isMine &&
-        (participant._id === currentUserId || participant.id === currentUserId)
-      ) {
+    const filteredParticipants = participants.filter((participant) => {
+      // 읽지 않은 사람 필터링
+      if(currentUserId === participant._id || currentUserId === participant.id)
         return false;
-      }
-
+      if(senderId === participant._id || senderId === participant.id)
+        return false;
       return !currentReaders.some(
         (reader) =>
-          reader.userId === participant._id || reader.userId === participant.id
+          reader.userId === participant._id ||
+          reader.userId === participant.id
       );
     });
-  }, [participants, currentReaders, messageType, isMine, currentUserId]);
+
+    console.log(
+      "unreadParticipants for message",
+      messageId,
+      filteredParticipants,
+      "senderId : ",
+      senderId,
+      "currentUserID : ",
+      currentUserId,
+      "participantIDs : ",
+      participants.map((p) => p._id || p.id),
+      "isMine: ",
+      isMine
+    );
+
+    return filteredParticipants;
+  }, [
+    participants,
+    currentReaders,
+    messageType,
+    messageId,
+    senderId,
+    currentUserId,
+    isMine,
+  ]);
+
   // 읽지 않은 참여자 수 계산
   const unreadCount = useMemo(() => {
     if (messageType === "system") {
@@ -146,6 +170,25 @@ const ReadStatus = ({
     currentReaders,
     markMessageAsRead,
   ]);
+
+  // 메시지를 보낸 사람(senderId)에 대한 읽음 처리
+  useEffect(() => {
+    if (currentUserId && senderId === currentUserId && !hasMarkedAsRead) {
+      setHasMarkedAsRead(true);
+      setCurrentReaders((prev) => {
+        if (prev.some((reader) => reader.userId === currentUserId)) {
+          return prev;
+        }
+        return [
+          ...prev,
+          {
+            userId: currentUserId,
+            readAt: new Date(),
+          },
+        ];
+      });
+    }
+  }, [currentUserId, senderId, hasMarkedAsRead]);
 
   // 툴팁 텍스트 생성
   const getTooltipText = useCallback(() => {

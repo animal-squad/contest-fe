@@ -48,6 +48,7 @@ const ChatInput = forwardRef(
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadError, setUploadError] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [forceRender, setForceRender] = useState(false);
 
     const handleFileValidationAndPreview = useCallback(
       async (file) => {
@@ -130,7 +131,8 @@ const ChatInput = forwardRef(
             setTimeout(() => {
               // 여기에 메시지 읽음 처리나 원하는 체크 로직을 작성하세요.
               console.log("메시지 전송 후 1초 뒤 체크 로직 실행");
-            }, 1000);
+              setForceRender(Date.now());
+            }, 300);
           } catch (error) {
             console.error("File submit error:", error);
             setUploadError(error.message);
@@ -146,7 +148,8 @@ const ChatInput = forwardRef(
           setTimeout(() => {
             // 여기에 메시지 읽음 처리나 원하는 체크 로직을 작성하세요.
             console.log("메시지 전송 후 1초 뒤 체크 로직 실행");
-          }, 1000);
+            setForceRender(Date.now());
+          }, 300);
         }
       },
       [files, message, onSubmit, setMessage]
