@@ -84,15 +84,11 @@ const Navbar = () => {
               }}
               style={{ userSelect: "none" }} // 텍스트 드래그 차단
               draggable="false" // 요소 드래그 차단
-              onDragStart={(e) => e.preventDefault()}
-            >
-              <Image
+              onDragStart={(e) => e.preventDefault()}>
+              <img
                 src="https://cdn.goorm-ktb-013.goorm.team/images/logo.png"
                 alt="Chat App Logo"
-                width={240}
-                height={72}
-                style={{ objectFit: "contain" }}
-                priority
+                style={{ objectFit: "contain", width: "240px", height: "72px" }}
                 draggable="false"
                 onDragStart={(e) => e.preventDefault()}
               />
@@ -105,15 +101,13 @@ const Navbar = () => {
                 <Button
                   variant={isInChatRooms ? "primary" : "text"}
                   onClick={() => handleNavigation("/chat-rooms")}
-                  size="lg"
-                >
+                  size="lg">
                   채팅방 목록
                 </Button>
                 <Button
                   variant="secondary"
                   onClick={() => handleNavigation("/chat-rooms/new")}
-                  size="lg"
-                >
+                  size="lg">
                   새 채팅방
                 </Button>
               </div>
@@ -126,8 +120,7 @@ const Navbar = () => {
                 isOpen={dropdownOpen}
                 toggle={toggleDropdown}
                 direction="down"
-                size="lg"
-              >
+                size="lg">
                 <DropdownToggle caret className="flex items-center">
                   <PersistentAvatar
                     user={currentUser}
@@ -152,15 +145,13 @@ const Navbar = () => {
                 <Button
                   variant="text"
                   onClick={() => handleNavigation("/login")}
-                  size="lg"
-                >
+                  size="lg">
                   로그인
                 </Button>
                 <Button
                   variant="primary"
                   onClick={() => handleNavigation("/register")}
-                  size="lg"
-                >
+                  size="lg">
                   회원가입
                 </Button>
               </div>
