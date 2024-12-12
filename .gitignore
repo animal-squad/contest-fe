@@ -22,3 +22,5 @@ logs
 
 # next
 .next/
+
+.DS_Store
