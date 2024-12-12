@@ -218,17 +218,6 @@ const MessageActions = ({
       </div>
     </div>
   );
-};
-
-MessageActions.defaultProps = {
-  messageId: '',
-  messageContent: '',
-  reactions: {},
-  currentUserId: null,
-  onReactionAdd: () => {},
-  onReactionRemove: () => {},
-  isMine: false,
-  room: null
-};
+}; 
 
 export default React.memo(MessageActions);

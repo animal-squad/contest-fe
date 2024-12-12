@@ -182,18 +182,8 @@ export const useRoomHandling = (
 
         const response = await axiosInstance.get(`/rooms/${roomId}`);
 
-        if (!response.ok) {
-          if (response.status === 401) {
-            const refreshed = await handleSessionError();
-            if (refreshed && mountedRef.current) {
-              return fetchRoomData(roomId);
-            }
-            throw new Error("인증이 만료되었습니다.");
-          }
-          throw new Error("채팅방 정보를 불러오는데 실패했습니다.");
-        }
+        const { data } = response;
 
-        const data = response;
         if (!data.success || !data.data) {
           throw new Error("채팅방 데이터가 올바르지 않습니다.");
         }

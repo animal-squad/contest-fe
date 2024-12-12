@@ -82,10 +82,11 @@ class SocketService {
           this.cleanup(CLEANUP_REASONS.RECONNECT);
         }
 
-        const socketUrl = process.env.NEXT_PUBLIC_API_URL + "/api";
+        const socketUrl = process.env.NEXT_PUBLIC_API_URL;
         console.log("[Socket] Connecting to:", socketUrl);
 
         this.socket = io(socketUrl, {
+          path: "/api/socket",
           ...options,
           transports: ["websocket", "polling"],
           reconnection: true,
