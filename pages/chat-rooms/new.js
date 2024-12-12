@@ -40,11 +40,6 @@ function NewChatRoom() {
         password,
       });
 
-      if (!response.ok) {
-        const errorData = response;
-        throw new Error(errorData.message || "채팅방 입장에 실패했습니다.");
-      }
-
       // 채팅방으로 이동
       router.push(`/chat?room=${roomId}`);
     } catch (error) {
@@ -81,24 +76,7 @@ function NewChatRoom() {
         password: formData.hasPassword ? formData.password : undefined,
       });
 
-      if (!response.ok) {
-        const errorData = response;
-        if (response.status === 401) {
-          try {
-            await authService.refreshToken();
-            const updatedUser = authService.getCurrentUser();
-            if (updatedUser) {
-              setCurrentUser(updatedUser);
-              return handleSubmit(e);
-            }
-          } catch (refreshError) {
-            throw new Error("인증이 만료되었습니다. 다시 로그인해주세요.");
-          }
-        }
-        throw new Error(errorData.message || "채팅방 생성에 실패했습니다.");
-      }
-
-      const { data } = response;
+      const { data } = response.data;
 
       // 생성된 채팅방에 자동으로 입장
       await joinRoom(
