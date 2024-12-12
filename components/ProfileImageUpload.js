@@ -65,11 +65,11 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
       );
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = response;
         throw new Error(errorData.message || "이미지 업로드에 실패했습니다.");
       }
 
-      const data = await response.json();
+      const data = response;
 
       // 로컬 스토리지의 사용자 정보 업데이트
       const updatedUser = {
@@ -113,7 +113,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
       const response = await axiosInstance.delete(`/users/profile-image`);
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = response;
         throw new Error(errorData.message || "이미지 삭제에 실패했습니다.");
       }
 

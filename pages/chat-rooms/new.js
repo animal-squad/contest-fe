@@ -41,7 +41,7 @@ function NewChatRoom() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = response;
         throw new Error(errorData.message || "채팅방 입장에 실패했습니다.");
       }
 
@@ -82,7 +82,7 @@ function NewChatRoom() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = response;
         if (response.status === 401) {
           try {
             await authService.refreshToken();
@@ -98,7 +98,7 @@ function NewChatRoom() {
         throw new Error(errorData.message || "채팅방 생성에 실패했습니다.");
       }
 
-      const { data } = await response.json();
+      const { data } = response;
 
       // 생성된 채팅방에 자동으로 입장
       await joinRoom(
