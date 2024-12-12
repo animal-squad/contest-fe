@@ -125,6 +125,12 @@ const ChatInput = forwardRef(
 
             setMessage("");
             setFiles([]);
+
+            // 메시지 전송 후 1초 후에 체크 로직 실행
+            setTimeout(() => {
+              // 여기에 메시지 읽음 처리나 원하는 체크 로직을 작성하세요.
+              console.log("메시지 전송 후 1초 뒤 체크 로직 실행");
+            }, 1000);
           } catch (error) {
             console.error("File submit error:", error);
             setUploadError(error.message);
@@ -135,6 +141,12 @@ const ChatInput = forwardRef(
             content: message.trim(),
           });
           setMessage("");
+
+          // 메시지 전송 후 1초 후에 체크 로직 실행
+          setTimeout(() => {
+            // 여기에 메시지 읽음 처리나 원하는 체크 로직을 작성하세요.
+            console.log("메시지 전송 후 1초 뒤 체크 로직 실행");
+          }, 1000);
         }
       },
       [files, message, onSubmit, setMessage]

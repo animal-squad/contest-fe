@@ -1,16 +1,23 @@
-import React, { useMemo, useEffect, useState, useCallback, useRef } from 'react';
-import { Text, Tooltip } from '@goorm-dev/vapor-components';
-import { CheckCheck, Check } from 'lucide-react';
+import React, {
+  useMemo,
+  useEffect,
+  useState,
+  useCallback,
+  useRef,
+} from "react";
+import { Text, Tooltip } from "@goorm-dev/vapor-components";
+import { CheckCheck, Check } from "lucide-react";
 
-const ReadStatus = ({ 
-  messageType = 'text',
+const ReadStatus = ({
+  messageType = "text",
   participants = [],
   readers = [],
-  className = '',
+  className = "",
   socketRef = null,
   messageId = null,
-  messageRef = null, // 메시지 요소의 ref 추가
-  currentUserId = null // 현재 사용자 ID 추가
+  messageRef = null, // 메시지 요소의 ref
+  currentUserId = null, // 현재 사용자 ID
+  isMine = false,
 }) => {
   const [currentReaders, setCurrentReaders] = useState(readers || []);
   const [tooltipOpen, setTooltipOpen] = useState(false);
@@ -18,21 +25,30 @@ const ReadStatus = ({
   const statusRef = useRef(null);
   const observerRef = useRef(null);
 
-  // 읽지 않은 참여자 명단 생성 
-  const unreadParticipants = useMemo(() => {
-    if (messageType === 'system') return [];
-    
-    return participants.filter(participant => 
-      !currentReaders.some(reader => 
-        reader.userId === participant._id || 
-        reader.userId === participant.id
-      )
-    );
-  }, [participants, currentReaders, messageType]);
+  console.log("ReadStatus.js 실행");
 
+  // 읽지 않은 참여자 명단 생성
+  const unreadParticipants = useMemo(() => {
+    if (messageType === "system") return [];
+
+    return participants.filter((participant) => {
+      // isMine이 true이고, 해당 participant가 현재 사용자라면 무조건 읽은 것으로 처리
+      if (
+        isMine &&
+        (participant._id === currentUserId || participant.id === currentUserId)
+      ) {
+        return false;
+      }
+
+      return !currentReaders.some(
+        (reader) =>
+          reader.userId === participant._id || reader.userId === participant.id
+      );
+    });
+  }, [participants, currentReaders, messageType, isMine, currentUserId]);
   // 읽지 않은 참여자 수 계산
   const unreadCount = useMemo(() => {
-    if (messageType === 'system') {
+    if (messageType === "system") {
       return 0;
     }
     return unreadParticipants.length;
@@ -40,44 +56,56 @@ const ReadStatus = ({
 
   // 메시지를 읽음으로 표시하는 함수
   const markMessageAsRead = useCallback(async () => {
-    if (!messageId || !currentUserId || hasMarkedAsRead || 
-        messageType === 'system' || !socketRef?.current) {
+    if (
+      !messageId ||
+      !currentUserId ||
+      hasMarkedAsRead ||
+      messageType === "system" ||
+      !socketRef?.current
+    ) {
       return;
     }
 
     try {
       // Socket.IO를 통해 서버에 읽음 상태 전송
-      socketRef.current.emit('markMessagesAsRead', {
-        messageIds: [messageId]
+      socketRef.current.emit("markMessagesAsRead", {
+        messageIds: [messageId],
       });
 
       setHasMarkedAsRead(true);
 
       // 현재 사용자를 읽은 목록에 추가
-      setCurrentReaders(prev => {
-        if (prev.some(reader => reader.userId === currentUserId)) {
+      setCurrentReaders((prev) => {
+        if (prev.some((reader) => reader.userId === currentUserId)) {
           return prev;
         }
-        return [...prev, {
-          userId: currentUserId,
-          readAt: new Date()
-        }];
+        return [
+          ...prev,
+          {
+            userId: currentUserId,
+            readAt: new Date(),
+          },
+        ];
       });
-
     } catch (error) {
-      console.error('Error marking message as read:', error);
+      console.error("Error marking message as read:", error);
     }
   }, [messageId, currentUserId, hasMarkedAsRead, messageType, socketRef]);
 
   // Intersection Observer 설정
   useEffect(() => {
-    if (!messageRef?.current || !currentUserId || hasMarkedAsRead || messageType === 'system') {
+    if (
+      !messageRef?.current ||
+      !currentUserId ||
+      hasMarkedAsRead ||
+      messageType === "system"
+    ) {
       return;
     }
 
     // 이미 읽은 메시지인지 확인
-    const isAlreadyRead = currentReaders.some(reader => 
-      reader.userId === currentUserId
+    const isAlreadyRead = currentReaders.some(
+      (reader) => reader.userId === currentUserId
     );
 
     if (isAlreadyRead) {
@@ -87,19 +115,22 @@ const ReadStatus = ({
 
     const observerOptions = {
       root: null,
-      rootMargin: '0px',
-      threshold: 0.5 // 메시지의 50%가 보여야 읽음으로 처리
+      rootMargin: "0px",
+      threshold: 0.5, // 메시지의 50%가 보여야 읽음으로 처리
     };
 
     const handleIntersect = (entries) => {
-      entries.forEach(entry => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting && !hasMarkedAsRead) {
           markMessageAsRead();
         }
       });
     };
 
-    observerRef.current = new IntersectionObserver(handleIntersect, observerOptions);
+    observerRef.current = new IntersectionObserver(
+      handleIntersect,
+      observerOptions
+    );
     observerRef.current.observe(messageRef.current);
 
     return () => {
@@ -107,37 +138,50 @@ const ReadStatus = ({
         observerRef.current.disconnect();
       }
     };
-  }, [messageRef, currentUserId, hasMarkedAsRead, messageType, currentReaders, markMessageAsRead]);
+  }, [
+    messageRef,
+    currentUserId,
+    hasMarkedAsRead,
+    messageType,
+    currentReaders,
+    markMessageAsRead,
+  ]);
 
   // 툴팁 텍스트 생성
   const getTooltipText = useCallback(() => {
     if (unreadCount === 0) return "모두 읽음";
-    const unreadNames = unreadParticipants.map(p => p.name);
-    return `${unreadNames.join(', ')}이 읽지 않음`;
+    const unreadNames = unreadParticipants.map((p) => p.name);
+    return `${unreadNames.join(", ")}이 읽지 않음`;
   }, [unreadCount, unreadParticipants]);
 
   // 읽음 상태 업데이트 핸들러
-  const handleReadStatusUpdate = useCallback(({ userId, messageIds, timestamp }) => {
-    if (!messageId || !messageIds.includes(messageId)) return;
+  const handleReadStatusUpdate = useCallback(
+    ({ userId, messageIds, timestamp }) => {
+      if (!messageId || !messageIds.includes(messageId)) return;
 
-    setCurrentReaders(prev => {
-      if (prev.some(reader => reader.userId === userId)) {
-        return prev;
-      }
-      
-      return [...prev, { 
-        userId, 
-        readAt: timestamp || new Date()
-      }];
-    });
-  }, [messageId]);
+      setCurrentReaders((prev) => {
+        if (prev.some((reader) => reader.userId === userId)) {
+          return prev;
+        }
+
+        return [
+          ...prev,
+          {
+            userId,
+            readAt: timestamp || new Date(),
+          },
+        ];
+      });
+    },
+    [messageId]
+  );
 
   // 참여자 업데이트 핸들러
   const handleParticipantsUpdate = useCallback((updatedParticipants) => {
-    setCurrentReaders(prev => 
-      prev.filter(reader => 
-        updatedParticipants.some(p => 
-          p._id === reader.userId || p.id === reader.userId
+    setCurrentReaders((prev) =>
+      prev.filter((reader) =>
+        updatedParticipants.some(
+          (p) => p._id === reader.userId || p.id === reader.userId
         )
       )
     );
@@ -152,28 +196,28 @@ const ReadStatus = ({
   useEffect(() => {
     if (!socketRef?.current) return;
 
-    socketRef.current.on('messagesRead', handleReadStatusUpdate);
-    socketRef.current.on('participantsUpdate', handleParticipantsUpdate);
+    socketRef.current.on("messagesRead", handleReadStatusUpdate);
+    socketRef.current.on("participantsUpdate", handleParticipantsUpdate);
 
     return () => {
       if (socketRef.current) {
-        socketRef.current.off('messagesRead', handleReadStatusUpdate);
-        socketRef.current.off('participantsUpdate', handleParticipantsUpdate);
+        socketRef.current.off("messagesRead", handleReadStatusUpdate);
+        socketRef.current.off("participantsUpdate", handleParticipantsUpdate);
       }
     };
   }, [socketRef, handleReadStatusUpdate, handleParticipantsUpdate]);
 
-  const toggle = () => setTooltipOpen(prev => !prev);
+  const toggle = () => setTooltipOpen((prev) => !prev);
 
   // 시스템 메시지는 읽음 상태 표시 안 함
-  if (messageType === 'system') {
+  if (messageType === "system") {
     return null;
   }
 
   // 모두 읽은 경우
   if (unreadCount === 0) {
     return (
-      <div 
+      <div
         className={`read-status ${className}`}
         ref={statusRef}
         role="status"
@@ -199,7 +243,7 @@ const ReadStatus = ({
 
   // 읽지 않은 사람이 있는 경우
   return (
-    <div 
+    <div
       className={`read-status ${className}`}
       ref={statusRef}
       role="status"
@@ -227,6 +271,6 @@ const ReadStatus = ({
   );
 };
 
-ReadStatus.displayName = 'ReadStatus';
+ReadStatus.displayName = "ReadStatus";
 
 export default React.memo(ReadStatus);
