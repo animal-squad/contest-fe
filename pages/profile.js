@@ -33,9 +33,7 @@ const Profile = () => {
   // 프로필 이미지 URL 생성
   const getProfileImageUrl = useCallback((imagePath) => {
     if (!imagePath) return null;
-    return imagePath.startsWith('http') ? 
-      imagePath : 
-      `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
+    return `https://cdn.goorm-ktb-013.goorm.team/${imagePath}`;
   }, []);
 
   useEffect(() => {

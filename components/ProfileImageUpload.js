@@ -15,9 +15,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
   // 프로필 이미지 URL 생성
   const getProfileImageUrl = (imagePath) => {
     if (!imagePath) return null;
-    return imagePath.startsWith("http")
-      ? imagePath
-      : `${process.env.NEXT_PUBLIC_API_URL}${imagePath}`;
+    return `https://cdn.goorm-ktb-013.goorm.team/${key}`;
   };
 
   // 컴포넌트 마운트 시 이미지 설정
@@ -69,7 +67,19 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
         throw new Error(errorData.message || "이미지 업로드에 실패했습니다.");
       }
 
-      const data = await response.json();
+      const { key, meta } = await response.json();
+
+      // 소켓 이벤트로 메타데이터 전달
+      await socketRef.current.emit('chatMessage', {
+        room: roomId,
+        type: 'file',
+        content: content, // 메시지 내용
+        fileData: {
+          key,        // 스토리지 키
+          meta,       // 파일 메타데이터
+          url: `https://cdn.goorm-ktb-013.goorm.team/${key}` // 파일 URL
+        }
+      });
 
       // 로컬 스토리지의 사용자 정보 업데이트
       const updatedUser = {
