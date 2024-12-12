@@ -36,7 +36,7 @@ function NewChatRoom() {
 
   const joinRoom = async (roomId, password) => {
     try {
-      const response = await axiosInstance.post(`/api/rooms/${roomId}/join`, {
+      const response = await axiosInstance.post(`/rooms/${roomId}/join`, {
         password,
       });
 
