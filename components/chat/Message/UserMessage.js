@@ -94,15 +94,6 @@ const UserMessage = ({
       </div>
     </div>
   );
-};
-
-UserMessage.defaultProps = {
-  msg: {},
-  isMine: false,
-  currentUser: null,
-  onReactionAdd: () => {},
-  onReactionRemove: () => {},
-  room: null,
-};
+}; 
 
 export default React.memo(UserMessage);
