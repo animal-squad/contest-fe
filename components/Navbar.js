@@ -87,7 +87,7 @@ const Navbar = () => {
               onDragStart={(e) => e.preventDefault()}
             >
               <Image
-                src="https://cdn.goorm-ktb-013.goorm.team/images/logo.png"
+                src="/images/logo.png"
                 alt="Chat App Logo"
                 width={240}
                 height={72}
