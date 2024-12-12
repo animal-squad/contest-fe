@@ -59,17 +59,20 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
       formData.append("profileImage", file);
 
       // 파일 업로드 요청
+      for (const pair of formData.entries()) {
+        console.log("파일업로드", pair[0], pair[1]); // key와 value 출력
+      }
       const response = await axiosInstance.post(
         `/users/profile-image`,
-        formData
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
-      if (!response.ok) {
-        const errorData = response;
-        throw new Error(errorData.message || "이미지 업로드에 실패했습니다.");
-      }
-
-      const data = response;
+      const { data } = response;
 
       // 로컬 스토리지의 사용자 정보 업데이트
       const updatedUser = {
@@ -111,11 +114,6 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
       }
 
       const response = await axiosInstance.delete(`/users/profile-image`);
-
-      if (!response.ok) {
-        const errorData = response;
-        throw new Error(errorData.message || "이미지 삭제에 실패했습니다.");
-      }
 
       // 로컬 스토리지의 사용자 정보 업데이트
       const updatedUser = {
