@@ -2,7 +2,7 @@
 import axios from "axios";
 import authService from "./authService";
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL + "api";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
 if (!API_BASE_URL) {
   console.warn(
