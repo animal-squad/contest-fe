@@ -4,7 +4,7 @@ import { Alert } from "@goorm-dev/vapor-components";
 import { Camera, X } from "lucide-react";
 import authService from "../services/authService";
 import PersistentAvatar from "./common/PersistentAvatar";
-import axiosInstance from "../../services/axios";
+import axiosInstance from "../services/axios";
 
 const ProfileImageUpload = ({ currentImage, onImageChange }) => {
   const [previewUrl, setPreviewUrl] = useState(null);

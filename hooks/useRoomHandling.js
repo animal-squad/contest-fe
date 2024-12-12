@@ -2,7 +2,7 @@ import { useRef, useEffect, useCallback } from "react";
 import socketService from "../services/socket";
 import authService from "../services/authService";
 import { Toast } from "../components/Toast";
-import axiosInstance from "../../services/axios";
+import axiosInstance from "../services/axios";
 
 export const useRoomHandling = (
   socketRef,
