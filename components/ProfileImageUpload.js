@@ -30,46 +30,49 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-  
+
     try {
       // 이미지 파일 검증
       if (!file.type.startsWith("image/")) {
         throw new Error("이미지 파일만 업로드할 수 있습니다.");
       }
-  
+
       // 파일 크기 제한 (5MB)
       if (file.size > 5 * 1024 * 1024) {
         throw new Error("파일 크기는 5MB를 초과할 수 없습니다.");
       }
-  
+
       setUploading(true);
       setError("");
-  
+
       // 파일 미리보기 생성
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
-  
+
       // 현재 사용자의 인증 정보 가져오기
       const user = authService.getCurrentUser();
       if (!user?.token) {
         throw new Error("인증 정보가 없습니다.");
       }
-  
+
       // 서버에서 Presigned URL 요청
       const getPresignedUrl = async (user) => {
         try {
-          const response = await axiosInstance.post(`/files/profile-presigned-url`, {
-            name: user.name,
-            email: user.email,
-          });
-  
+          const response = await axiosInstance.post(
+            `/files/profile-presigned-url`,
+            {
+              name: user.name,
+              email: user.email,
+            }
+          );
+
           return response.data; // { fileKey, presignedUrl }
         } catch (error) {
           console.error("Error requesting Presigned URL:", error);
           throw error;
         }
       };
-  
+
       // Presigned URL을 사용하여 S3에 파일 업로드
       const uploadToS3 = async (presignedUrl, file) => {
         try {
@@ -78,7 +81,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
               "Content-Type": file.type, // 파일 MIME 타입 설정
             },
           });
-  
+
           if (response.status === 200) {
             return true; // 업로드 성공
           }
@@ -88,7 +91,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
           throw error;
         }
       };
-  
+
       // 서버에 업로드 완료 알림
       const notifyUploadComplete = async (user, fileKey) => {
         try {
@@ -97,23 +100,37 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
             email: user.email,
             fileKey: fileKey,
           });
-  
-          return response.data; // 성공 메시지 반환
+
+          const { success, message, user : updatedUser } = response.data; // 성공 메시지 반환
+          if (!success) {
+            throw new Error(message || "프로필 이미지 업데이트 실패");
+          }
+
+          // 반환된 데이터를 함수 호출자에게 전달
+          return {
+            message,
+            updatedUser,
+          };
         } catch (error) {
           console.error("Error notifying upload complete:", error);
           throw error;
         }
       };
-  
+
       // Step 1: Presigned URL 요청
       const { fileKey, presignedUrl } = await getPresignedUrl(user);
-  
+
       // Step 2: S3 업로드
       await uploadToS3(presignedUrl, file);
-  
+
       // Step 3: 업로드 완료 알림
-      await notifyUploadComplete(user, fileKey);
-  
+      const { message, updatedUser } = await notifyUploadComplete(
+        user,
+        fileKey
+      );
+
+      onImageChange(updatedUser.profileImage);
+
       console.log("Profile updated successfully");
       alert("프로필 이미지가 성공적으로 업데이트되었습니다!");
     } catch (error) {
@@ -127,7 +144,6 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
       }
     }
   };
-  
 
   const handleRemoveImage = async () => {
     try {
