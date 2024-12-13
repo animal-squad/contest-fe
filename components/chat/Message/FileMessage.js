@@ -418,19 +418,6 @@ const FileMessage = ({
       </div>
     </div>
   );
-};
-
-FileMessage.defaultProps = {
-  msg: {
-    file: {
-      mimetype: "",
-      filename: "",
-      originalname: "",
-      size: 0,
-    },
-  },
-  isMine: false,
-  currentUser: null,
-};
+}; 
 
 export default React.memo(FileMessage);

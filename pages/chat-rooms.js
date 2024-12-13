@@ -614,12 +614,12 @@ function ChatRoomsComponent() {
         }
       );
 
-      if (response.data.success) {
+      const { data } = response;
+
+      if (data.success) {
         router.push(`/chat?room=${roomId}`);
       }
     } catch (error) {
-      console.error("Room join error:", error);
-
       let errorMessage = "입장에 실패했습니다.";
       if (error.response?.status === 404) {
         errorMessage = "채팅방을 찾을 수 없습니다.";

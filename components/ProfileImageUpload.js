@@ -101,7 +101,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
             fileKey: fileKey,
           });
 
-          const { success, message, user : updatedUser } = response.data; // 성공 메시지 반환
+          const { success, message, user: updatedUser } = response.data; // 성공 메시지 반환
           if (!success) {
             throw new Error(message || "프로필 이미지 업데이트 실패");
           }
@@ -129,10 +129,13 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
         fileKey
       );
 
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      // 부모 컴포넌트에 변경 알림
       onImageChange(updatedUser.profileImage);
 
-      console.log("Profile updated successfully");
-      alert("프로필 이미지가 성공적으로 업데이트되었습니다!");
+      // 전역 이벤트 발생
+      window.dispatchEvent(new Event("userProfileUpdate"));
     } catch (error) {
       console.error("Image upload error:", error);
       setError(error.message);
@@ -156,11 +159,6 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
       }
 
       const response = await axiosInstance.delete(`/users/profile-image`);
-
-      if (!response.ok) {
-        const errorData = response;
-        throw new Error(errorData.message || "이미지 삭제에 실패했습니다.");
-      }
 
       // 로컬 스토리지의 사용자 정보 업데이트
       const updatedUser = {
@@ -215,8 +213,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
             color="secondary"
             className="rounded-full p-2 mt-3"
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-          >
+            disabled={uploading}>
             <Camera className="w-4 h-4" />
           </Button>
 
@@ -226,8 +223,7 @@ const ProfileImageUpload = ({ currentImage, onImageChange }) => {
               color="danger"
               className="rounded-full p-2 mt-3 ml-2"
               onClick={handleRemoveImage}
-              disabled={uploading}
-            >
+              disabled={uploading}>
               <X className="w-4 h-4" />
             </Button>
           )}

@@ -93,13 +93,4 @@ const AIMessage = ({
   );
 };
 
-AIMessage.defaultProps = {
-  msg: {},
-  isStreaming: false,
-  currentUser: null,
-  onReactionAdd: () => {},
-  onReactionRemove: () => {},
-  room: null,
-};
-
 export default React.memo(AIMessage);
